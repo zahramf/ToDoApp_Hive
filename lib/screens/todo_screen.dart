@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:to_do_app/models/todo_model.dart';
 
 import '../constant.dart';
 
 class ToDoScreen extends StatelessWidget {
-   ToDoScreen({super.key});
+   ToDoScreen({super.key, required this.type});
+  final String type;
 TextEditingController controller =TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -12,7 +15,7 @@ TextEditingController controller =TextEditingController();
       appBar: AppBar(
         backgroundColor: kLightBlueColor,
         elevation: 0,
-        title: const Text("Add Todo"),
+        title:  Text(type =='add'? "Add Task":"Update Task"),
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -29,7 +32,7 @@ TextEditingController controller =TextEditingController();
               decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: const BorderSide(width: 2, color: Colors.grey),
+                    borderSide: const BorderSide(width: 2, color: Colors.white),
                   ),
                   labelText: "Add task"),
             ),
@@ -37,18 +40,31 @@ TextEditingController controller =TextEditingController();
               height: 20,
             ),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                onButtonPressed(controller.text);
+              },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(kPinkColor),
                 fixedSize: MaterialStateProperty.all(
                   const Size(100, 40),
                 ),
               ),
-              child: const Text("Add"),
+              child:  Text(type =='add'? "Add":"Update"),
             ),
           ],
         ),
       ),
     );
+  }
+
+  void onButtonPressed(String task) {
+
+    add(task);
+  }
+
+  add(String task)async{
+    var box =await Hive.openBox('todo');
+    Todo todo = Todo(task);
+    box.add(todo);
   }
 }

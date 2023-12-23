@@ -34,7 +34,7 @@ class HomeScreen extends StatelessWidget {
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(
             builder: (context) {
-              return ToDoScreen();
+              return ToDoScreen(type: 'add',);
             },
           ));
         },
