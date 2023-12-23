@@ -59,7 +59,13 @@ TextEditingController controller =TextEditingController();
 
   void onButtonPressed(String task) {
 
-    add(task);
+    if(type =='add'){
+      add(task);
+    }//
+    else{
+      update(task);
+    }
+
   }
 
   add(String task)async{
@@ -67,4 +73,5 @@ TextEditingController controller =TextEditingController();
     Todo todo = Todo(task);
     box.add(todo);
   }
+   update(String task)async{}
 }

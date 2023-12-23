@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:to_do_app/constant.dart';
+import 'package:to_do_app/models/todo_model.dart';
 import 'package:to_do_app/screens/todo_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -34,7 +37,9 @@ class HomeScreen extends StatelessWidget {
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(
             builder: (context) {
-              return ToDoScreen(type: 'add',);
+              return ToDoScreen(
+                type: 'add',
+              );
             },
           ));
         },
@@ -60,35 +65,72 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
-            SizedBox(
-              height: 80,
-              child: Card(
-                color: kDarkBlueColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-                child: const Center(
-                  child: ListTile(
-                    leading:
-                    Icon(
-                      Icons.check_circle_rounded,
-                      color: Colors.white,
-                    ),
-                    // Icon(
-                    //   Icons.circle_outlined,
-                    //   color: Colors.white,
-                    // ),
-                    title: Text(
-                      "task 1",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
+            FutureBuilder(
+              future: Hive.openBox('todo'),
+              builder: (context, snapshot) {
+                if (snapshot.hasData &&
+                    snapshot.connectionState == ConnectionState.done) {
+                  return todoList();
+                } //
+                else {
+                  return const Center(child: CircularProgressIndicator());
+                }
+              },
             )
           ],
         ),
       ),
+    );
+  }
+
+  Widget todoList() {
+    Box todoBox = Hive.box('todo');
+    return ValueListenableBuilder(
+      valueListenable: todoBox.listenable(),
+      builder: (context, Box box, child) {
+        if (box.values.isEmpty) {
+          return const Center(
+            child: Text(
+              "Add task!",
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          );
+        } //
+        else {
+          return ListView.builder(
+            shrinkWrap: true,
+            itemCount: todoBox.length,
+            itemBuilder: (context, index) {
+              final Todo todo = box.getAt(index);
+              return SizedBox(
+                height: 80,
+                child: Card(
+                  color: kDarkBlueColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  child: Center(
+                    child: ListTile(
+                      leading: const Icon(
+                        Icons.check_circle_rounded,
+                        color: Colors.white,
+                      ),
+// Icon(
+//   Icons.circle_outlined,
+//   color: Colors.white,
+// ),
+                      title: Text(
+                        todo.task,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        }
+      },
     );
   }
 }
