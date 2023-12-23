@@ -69,10 +69,15 @@ class HomeScreen extends StatelessWidget {
                 ),
                 child: const Center(
                   child: ListTile(
-                    leading: Icon(
-                      Icons.check_box_outline_blank_sharp,
+                    leading:
+                    Icon(
+                      Icons.check_circle_rounded,
                       color: Colors.white,
                     ),
+                    // Icon(
+                    //   Icons.circle_outlined,
+                    //   color: Colors.white,
+                    // ),
                     title: Text(
                       "task 1",
                       style: TextStyle(color: Colors.white),
