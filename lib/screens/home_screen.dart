@@ -38,7 +38,7 @@ class HomeScreen extends StatelessWidget {
           Navigator.push(context, MaterialPageRoute(
             builder: (context) {
               return ToDoScreen(
-                type: 'add',
+                type: 'add', index: -1, task: '',
               );
             },
           ));
@@ -97,37 +97,51 @@ class HomeScreen extends StatelessWidget {
           );
         } //
         else {
-          return ListView.builder(
-            shrinkWrap: true,
-            itemCount: todoBox.length,
-            itemBuilder: (context, index) {
-              final Todo todo = box.getAt(index);
-              return SizedBox(
-                height: 80,
-                child: Card(
-                  color: kDarkBlueColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  child: Center(
-                    child: ListTile(
-                      leading: const Icon(
-                        Icons.check_circle_rounded,
-                        color: Colors.white,
+          return SizedBox(
+            height: 500,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: todoBox.length,
+              itemBuilder: (context, index) {
+                final Todo todo = box.getAt(index);
+                return GestureDetector(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(
+                      builder: (context) {
+                        return ToDoScreen(
+                          type: 'update', index: index, task: todo.task,
+                        );
+                      },
+                    ));
+                  },
+                  child: SizedBox(
+                    height: 80,
+                    child: Card(
+                      color: kDarkBlueColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
                       ),
+                      child: Center(
+                        child: ListTile(
+                          leading: const Icon(
+                            Icons.check_circle_rounded,
+                            color: Colors.white,
+                          ),
 // Icon(
 //   Icons.circle_outlined,
 //   color: Colors.white,
 // ),
-                      title: Text(
-                        todo.task,
-                        style: const TextStyle(color: Colors.white),
+                          title: Text(
+                            todo.task,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           );
         }
       },

@@ -5,17 +5,25 @@ import 'package:to_do_app/models/todo_model.dart';
 import '../constant.dart';
 
 class ToDoScreen extends StatelessWidget {
-   ToDoScreen({super.key, required this.type});
+  ToDoScreen(
+      {super.key, required this.type, required this.index, required this.task});
+
   final String type;
-TextEditingController controller =TextEditingController();
+  final int index;
+  final String task;
+  TextEditingController controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    if (type == 'update') {
+      controller.text = task;
+    }
     return Scaffold(
       backgroundColor: kLightBlueColor,
       appBar: AppBar(
         backgroundColor: kLightBlueColor,
         elevation: 0,
-        title:  Text(type =='add'? "Add Task":"Update Task"),
+        title: Text(type == 'add' ? "Add Task" : "Update Task"),
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -29,10 +37,14 @@ TextEditingController controller =TextEditingController();
           children: [
             TextField(
               controller: controller,
+              style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: const BorderSide(width: 2, color: Colors.white),
+                    borderSide: const BorderSide(
+                      color: Colors.white,
+                      width: 2,
+                    ),
                   ),
                   labelText: "Add task"),
             ),
@@ -41,7 +53,7 @@ TextEditingController controller =TextEditingController();
             ),
             ElevatedButton(
               onPressed: () {
-                onButtonPressed(controller.text);
+                onButtonPressed(controller.text, index);
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(kPinkColor),
@@ -49,7 +61,7 @@ TextEditingController controller =TextEditingController();
                   const Size(100, 40),
                 ),
               ),
-              child:  Text(type =='add'? "Add":"Update"),
+              child: Text(type == 'add' ? "Add" : "Update"),
             ),
           ],
         ),
@@ -57,21 +69,25 @@ TextEditingController controller =TextEditingController();
     );
   }
 
-  void onButtonPressed(String task) {
-
-    if(type =='add'){
+  void onButtonPressed(String task, int index) {
+    if (type == 'add') {
       add(task);
-    }//
-    else{
-      update(task);
+    } //
+    else {
+      update(task, index);
     }
-
+    controller.clear();
   }
 
-  add(String task)async{
-    var box =await Hive.openBox('todo');
+  add(String task) async {
+    var box = await Hive.openBox('todo');
     Todo todo = Todo(task);
     box.add(todo);
   }
-   update(String task)async{}
+
+  update(String task, int index) async {
+    var box = await Hive.openBox('todo');
+    Todo todo = Todo(task);
+    box.putAt(index, todo);
+  }
 }
